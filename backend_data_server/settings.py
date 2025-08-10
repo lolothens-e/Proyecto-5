@@ -40,9 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "firebase_admin",   
+    "rest_framework",
     "homepage",
     "landing_api", 
-    "rest_framework",
+    
 ]
 
 MIDDLEWARE = [
