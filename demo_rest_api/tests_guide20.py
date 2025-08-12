@@ -1,19 +1,18 @@
 from django.test import TestCase
-from django.urls import reverse
 import json
 
 
 class Guide20DemoRestApiTests(TestCase):
     def test_collection_get_returns_active_items(self):
-        # GET on root collection
-        resp = self.client.get('/demo/rest/api/')
+        # GET on collection
+        resp = self.client.get('/demo/rest/api/index/')
         self.assertEqual(resp.status_code, 200)
         self.assertIsInstance(resp.json(), list)
 
     def test_post_validates_and_creates(self):
         # Missing fields -> 400
         resp = self.client.post(
-            '/demo/rest/api/',
+            '/demo/rest/api/index/',
             data=json.dumps({'name': 'UserX'}),
             content_type='application/json',
         )
@@ -21,7 +20,7 @@ class Guide20DemoRestApiTests(TestCase):
 
         # Valid create -> 201
         resp = self.client.post(
-            '/demo/rest/api/',
+            '/demo/rest/api/index/',
             data=json.dumps({'name': 'User04', 'email': 'user04@example.com'}),
             content_type='application/json',
         )
@@ -29,12 +28,11 @@ class Guide20DemoRestApiTests(TestCase):
         body = resp.json()
         self.assertIn('data', body)
         self.assertIn('id', body['data'])
-        return body['data']['id']
 
     def test_item_put_patch_delete_flow(self):
         # Create first
         create = self.client.post(
-            '/demo/rest/api/',
+            '/demo/rest/api/index/',
             data=json.dumps({'name': 'User05', 'email': 'user05@example.com'}),
             content_type='application/json',
         )
