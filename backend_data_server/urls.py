@@ -16,9 +16,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from django.http import JsonResponse
+
+def api_root(request):
+    return JsonResponse({
+        "message": "Django API Suite",
+        "endpoints": {
+            "admin": "/admin/",
+            "homepage": "/homepage/",
+            "demo_rest_api": "/demo/rest/api/index/",
+            "landing_api": "/landing/api/index/"
+        }
+    })
 
 urlpatterns = [
+    path('', api_root, name='root'),
     path('admin/', admin.site.urls),
     path('homepage/', include("homepage.urls")),
+    path('demo/rest/api/', include("demo_rest_api.urls")),
     path('landing/api/', include("landing_api.urls")),
 ]

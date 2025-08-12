@@ -28,7 +28,20 @@ SECRET_KEY = 'django-insecure-!+y$eq-*n)6nw*j#51s!$y9mx($z20#)8+)6f-64v&u^yjw19*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "testserver",  # Django test client
+    # Agregue su dominio de PythonAnywhere aquí, por ejemplo:
+    # "<USUARIO-PYTHONANYWHERE>.pythonanywhere.com",
+]
+
+# Permita configurar el dominio de PythonAnywhere vía variable de entorno para no editar código en el servidor
+PA_DOMAIN = os.environ.get("PYTHONANYWHERE_DOMAIN") or os.environ.get("PA_DOMAIN")
+if PA_DOMAIN:
+    # Acepta tanto 'usuario.pythonanywhere.com' como subdominios propios
+    ALLOWED_HOSTS.append(PA_DOMAIN)
 
 
 # Application definition
@@ -40,9 +53,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "firebase_admin",   
+    "firebase_admin",
     "rest_framework",
     "homepage",
+    "demo_rest_api",
     "landing_api", 
     
 ]
@@ -124,9 +138,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Directorios de estáticos de desarrollo (sirven desde la carpeta 'static/')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, STATIC_URL),
+    os.path.join(BASE_DIR, 'static'),
 ]
+
+# Destino de archivos estáticos para despliegue (PythonAnywhere)
+# Asegúrese de mapear /static/ -> /home/<USUARIO-PYTHONANYWHERE>/django_api_suite/assets/
+STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
     
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -137,6 +156,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FIREBASE_CREDENTIALS_PATH = credentials.Certificate("secrets/landing-key.json")
 
 # Inicialice la conexión con el Realtime Database con la clave privada y la URL de referencia
-firebase_admin.initialize_app(FIREBASE_CREDENTIALS_PATH, {
-   'databaseURL': 'https://jmstore-c1903-default-rtdb.firebaseio.com/'
-})
+try:
+    # Verificar si Firebase ya está inicializado
+    firebase_admin.get_app()
+except ValueError:
+    # Si no está inicializado, lo inicializamos
+    firebase_admin.initialize_app(FIREBASE_CREDENTIALS_PATH, {
+       'databaseURL': 'https://dawmp-14f63-default-rtdb.firebaseio.com/'
+    })
